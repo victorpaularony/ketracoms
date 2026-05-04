@@ -4,28 +4,6 @@ A React Native (Expo) Android app that captures geotagged photos and emails them
 
 ---
 
-## Project structure
-
-```
-├── App.tsx
-├── app.json                         ← Expo config + Android permissions
-├── package.json
-├── src/
-│   ├── config/
-│   │   └── constants.ts             ← ADMIN_EMAIL + SMTP_CONFIG  ← edit here
-│   ├── services/
-│   │   └── emailService.ts          ← Gmail SMTP send logic
-│   ├── navigation/
-│   │   └── TabNavigator.tsx
-│   ├── screens/
-│   │   ├── PhotoScreen.tsx          ← Camera + GPS + submit
-│   │   └── FormScreen.tsx           ← Placeholder (future)
-│   └── types/index.ts
-└── assets/
-```
-
----
-
 ## Step 1 — Prerequisites
 
 | Tool | Version |
