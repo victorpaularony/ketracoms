@@ -1,0 +1,61 @@
+# Note: I have also created this .gitignore at your project root (/home/vic/projects/ketracoms/.gitignore).
+# A .gitignore usually belongs in the project root so it can ignore folders like "node_modules" and "android" at the root level.
+# You may safely delete this src/.gitignore file.
+
+node_modules/
+.expo/
+dist/
+npm-debug.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.orig.*
+veda
+web-build/
+
+# macOS
+.DS_Store
+
+# Android/IntelliJ
+# Build artifacts
+build/
+android/app/build/
+android/app/.cxx/
+android/build/
+android/.gradle/
+android/local.properties
+*.iml
+
+# iOS
+ios/build/
+ios/Pods/
+ios/Podfile.lock
+*.xcworkspace
+
+# Metro
+.metro-health-check
+
+# BUCK
+buck-out/
+\.buckd/
+*.keystore
+!debug.keystore
+
+# Fastlane
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots
+fastlane/test_output
+
+# Bundle artifacts
+*.jsbundle
+*.jsbundle.meta
+
+# CocoaPods
+/ios/Pods/
+
+# IDEs
+.idea/
+.vscode/
