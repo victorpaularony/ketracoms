@@ -18,6 +18,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ADMIN_EMAIL, COLORS } from '../config/constants';
 import { sendGeoPhotoEmail } from '../services/emailService';
+import { uploadGeoPhoto } from '../services/supabaseService';
 import type { GeoPhoto } from '../types';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
@@ -47,22 +48,22 @@ export default function PhotoScreen() {
 
   const [cameraPermission, requestCameraPermission] = useCameraPermissions();
   const [locationPermission, setLocationPermission] = useState(false);
-  const [mediaPermission, setMediaPermission]       = useState(false);
+  const [mediaPermission, setMediaPermission] = useState(false);
 
-  const [facing, setFacing]           = useState<CameraType>('back');
-  const [location, setLocation]       = useState<Location.LocationObject | null>(null);
-  const [address, setAddress]         = useState('');
-  const [isLocating, setIsLocating]   = useState(true);
+  const [facing, setFacing] = useState<CameraType>('back');
+  const [location, setLocation] = useState<Location.LocationObject | null>(null);
+  const [address, setAddress] = useState('');
+  const [isLocating, setIsLocating] = useState(true);
 
   const [capturedPhoto, setCapturedPhoto] = useState<GeoPhoto | null>(null);
-  const [isCapturing, setIsCapturing]     = useState(false);
-  const [isSubmitting, setIsSubmitting]   = useState(false);
-  const [submitStatus, setSubmitStatus]   = useState<'idle' | 'saving' | 'sending'>('idle');
+  const [isCapturing, setIsCapturing] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<'idle' | 'saving' | 'uploading' | 'sending'>('idle');
 
   // ── Request permissions on mount ─────────────────────────────────────────
   useEffect(() => {
     (async () => {
-      const { status: loc }   = await Location.requestForegroundPermissionsAsync();
+      const { status: loc } = await Location.requestForegroundPermissionsAsync();
       const { status: media } = await MediaLibrary.requestPermissionsAsync();
       setLocationPermission(loc === 'granted');
       setMediaPermission(media === 'granted');
@@ -124,7 +125,7 @@ export default function PhotoScreen() {
     }
   }, [isCapturing, location, address]);
 
-  // ── Submit: save to gallery + send via Gmail SMTP ─────────────────────────
+  // ── Submit: save to gallery → then upload to Supabase AND email in parallel ──
   const handleSubmit = useCallback(async () => {
     if (!capturedPhoto || isSubmitting) return;
     setIsSubmitting(true);
@@ -136,23 +137,33 @@ export default function PhotoScreen() {
         await MediaLibrary.createAssetAsync(capturedPhoto.uri);
       }
 
-      // Step 2 — send via Gmail SMTP
-      setSubmitStatus('sending');
-      const result = await sendGeoPhotoEmail(capturedPhoto);
+      // Step 2 — run Supabase upload AND email send simultaneously
+      setSubmitStatus('uploading');
+      const [uploadOutcome, emailOutcome] = await Promise.allSettled([
+        uploadGeoPhoto(capturedPhoto),
+        sendGeoPhotoEmail(capturedPhoto),
+      ]);
 
-      if (result.success) {
-        Alert.alert(
-          'Submitted!',
-          `Photo saved to gallery and emailed to ${ADMIN_EMAIL}.`,
-          [{ text: 'OK', onPress: () => setCapturedPhoto(null) }],
-        );
-      } else {
-        Alert.alert(
-          'Email failed',
-          `Photo saved to gallery, but sending failed:\n\n${result.message}\n\nCheck your SMTP credentials in constants.ts.`,
-          [{ text: 'OK', onPress: () => setCapturedPhoto(null) }],
-        );
-      }
+      const uploadOk = uploadOutcome.status === 'fulfilled' && uploadOutcome.value.success;
+      const emailOk = emailOutcome.status === 'fulfilled' && emailOutcome.value.success;
+
+      const uploadMsg = uploadOk
+        ? 'Saved to cloud database ✓'
+        : uploadOutcome.status === 'rejected'
+          ? `Cloud error: ${(uploadOutcome.reason as Error).message}`
+          : `Cloud failed: ${(uploadOutcome as PromiseFulfilledResult<{ success: boolean; message: string }>).value.message}`;
+
+      const emailMsg = emailOk
+        ? `Emailed to ${ADMIN_EMAIL} ✓`
+        : emailOutcome.status === 'rejected'
+          ? `Email error: ${(emailOutcome.reason as Error).message}`
+          : `Email failed: ${(emailOutcome as PromiseFulfilledResult<{ success: boolean; message: string }>).value.message}`;
+
+      Alert.alert(
+        uploadOk || emailOk ? 'Submitted!' : 'Submission Failed',
+        `${uploadMsg}\n${emailMsg}`,
+        [{ text: 'OK', onPress: () => setCapturedPhoto(null) }],
+      );
     } catch (err: unknown) {
       Alert.alert('Error', (err as Error).message);
     } finally {
@@ -295,15 +306,16 @@ function PhotoPreview({
 }: {
   photo: GeoPhoto;
   isSubmitting: boolean;
-  submitStatus: 'idle' | 'saving' | 'sending';
+  submitStatus: 'idle' | 'saving' | 'uploading' | 'sending';
   onRetake: () => void;
   onSubmit: () => void;
   insets: { top: number; bottom: number };
 }) {
   const submitLabel =
     submitStatus === 'saving' ? 'Saving to gallery…' :
-    submitStatus === 'sending' ? 'Sending email…' :
-    'Submit';
+      submitStatus === 'uploading' ? 'Uploading to cloud…' :
+        submitStatus === 'sending' ? 'Sending email…' :
+          'Submit';
 
   return (
     <ScrollView
@@ -323,18 +335,18 @@ function PhotoPreview({
       {/* Metadata card */}
       <View style={preview.card}>
         <Text style={preview.cardTitle}>Photo Metadata</Text>
-        <MetaRow icon="time-outline"        label="Captured At" value={photo.capturedAt.toLocaleString()} />
-        <MetaRow icon="location-outline"    label="Address"     value={photo.address || '—'} />
+        <MetaRow icon="time-outline" label="Captured At" value={photo.capturedAt.toLocaleString()} />
+        <MetaRow icon="location-outline" label="Address" value={photo.address || '—'} />
         <MetaRow
           icon="navigate-outline"
           label="Coordinates"
           value={`${formatCoord(photo.location.coords.latitude)}, ${formatCoord(photo.location.coords.longitude)}`}
         />
         {photo.location.coords.altitude != null && (
-          <MetaRow icon="trending-up-outline"       label="Altitude"     value={`${photo.location.coords.altitude.toFixed(2)} m`} />
+          <MetaRow icon="trending-up-outline" label="Altitude" value={`${photo.location.coords.altitude.toFixed(2)} m`} />
         )}
         {photo.location.coords.accuracy != null && (
-          <MetaRow icon="radio-button-on-outline"   label="GPS Accuracy" value={`±${photo.location.coords.accuracy.toFixed(0)} m`} />
+          <MetaRow icon="radio-button-on-outline" label="GPS Accuracy" value={`±${photo.location.coords.accuracy.toFixed(0)} m`} />
         )}
         <View style={preview.divider} />
         <View style={preview.emailRow}>
@@ -422,8 +434,8 @@ function PermissionRequest({
         This app needs camera, location, and photo-library access.
       </Text>
       <View style={perm.list}>
-        <PermItem label="Camera"        granted={camera} />
-        <PermItem label="Location"      granted={location} />
+        <PermItem label="Camera" granted={camera} />
+        <PermItem label="Location" granted={location} />
         <PermItem label="Photo Library" granted={media} />
       </View>
       <TouchableOpacity style={perm.btn} onPress={onRequest} activeOpacity={0.85}>
