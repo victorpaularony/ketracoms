@@ -24,6 +24,7 @@ export interface GeoPhotoRecord {
   id: string;
   created_at: string;
   image_url: string;
+  image_data: string | null;
   storage_path: string;
   latitude: number | null;
   longitude: number | null;
@@ -159,7 +160,7 @@ export default function ImagesScreen() {
             }
           >
             <Image
-              source={{ uri: item.image_url }}
+              source={{ uri: item.image_data ? `data:image/jpeg;base64,${item.image_data}` : item.image_url }}
               style={styles.thumb}
               resizeMode="cover"
             />
