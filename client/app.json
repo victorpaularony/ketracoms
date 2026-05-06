@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Inovation",
-    "slug": "inovation",
+    "name": "client",
+    "slug": "client",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -16,7 +16,7 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#1a1a2e"
       },
-      "package": "com.inovation.app",
+      "package": "com.client.app",
       "permissions": [
         "android.permission.CAMERA",
         "android.permission.ACCESS_FINE_LOCATION",
@@ -28,23 +28,24 @@
       ]
     },
     "plugins": [
+      "expo-file-system",
       [
         "expo-camera",
         {
-          "cameraPermission": "Allow Inovation to access your camera to take geotagged photos."
+          "cameraPermission": "Allow Client to access your camera to take geotagged photos."
         }
       ],
       [
         "expo-location",
         {
-          "locationWhenInUsePermission": "Allow Inovation to use your location to geotag photos."
+          "locationWhenInUsePermission": "Allow Client to use your location to geotag photos."
         }
       ],
       [
         "expo-media-library",
         {
-          "photosPermission": "Allow Inovation to save photos to your library.",
-          "savePhotosPermission": "Allow Inovation to save photos to your library.",
+          "photosPermission": "Allow Client to save photos to your library.",
+          "savePhotosPermission": "Allow Client to save photos to your library.",
           "isAccessMediaLocationEnabled": true
         }
       ]
