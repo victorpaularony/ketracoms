@@ -87,7 +87,7 @@ export default function ImageDetailScreen() {
                 {/* Full-width image */}
                 <View style={styles.imageWrap}>
                     <Image
-                        source={{ uri: photo.image_url }}
+                        source={{ uri: photo.image_data ? `data:image/jpeg;base64,${photo.image_data}` : photo.image_url }}
                         style={styles.image}
                         resizeMode="cover"
                     />
