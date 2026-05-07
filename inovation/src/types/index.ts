@@ -8,4 +8,12 @@ export interface GeoPhoto {
   capturedAt: Date;
   location: LocationObject;
   address: string;
+  message?: string;
+}
+
+export interface FeedbackData {
+  contact: string;
+  message: string;
+  county: string;
+  submittedAt: Date;
 }
