@@ -2,7 +2,7 @@ import { decode } from 'base-64';
 import * as FileSystem from 'expo-file-system';
 import { supabase } from './supabaseClient';
 import { SUPABASE_BUCKET } from '../config/constants';
-import type { GeoPhoto } from '../types';
+import type { GeoPhoto, FeedbackData } from '../types';
 
 export interface UploadResult {
     success: boolean;
@@ -64,6 +64,7 @@ export async function uploadGeoPhoto(photo: GeoPhoto): Promise<UploadResult> {
             captured_at: photo.capturedAt.toISOString(),
             width: photo.width,
             height: photo.height,
+            message: photo.message || null,
         });
 
         if (insertError) {
@@ -71,6 +72,27 @@ export async function uploadGeoPhoto(photo: GeoPhoto): Promise<UploadResult> {
         }
 
         return { success: true, message: 'Uploaded to Supabase successfully.', imageUrl };
+    } catch (err: unknown) {
+        const msg = err instanceof Error ? err.message : String(err);
+        return { success: false, message: msg };
+    }
+}
+
+export async function uploadFeedback(feedback: FeedbackData): Promise<{ success: boolean; message: string }> {
+    try {
+        const { error } = await supabase.from('feedback_forms').insert({
+            email: feedback.contact,   // Map Contact -> Email (Admin compatibility)
+            message: feedback.message,
+            name: feedback.county,      // Map County -> Name (Admin compatibility)
+            created_at: feedback.submittedAt.toISOString(),
+        });
+
+        if (error) {
+            console.error('[supabaseService] Feedback insert error:', error);
+            return { success: false, message: `DB insert failed: ${error.message}` };
+        }
+
+        return { success: true, message: 'Feedback saved to database.' };
     } catch (err: unknown) {
         const msg = err instanceof Error ? err.message : String(err);
         return { success: false, message: msg };
