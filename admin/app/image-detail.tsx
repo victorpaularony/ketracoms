@@ -109,6 +109,13 @@ export default function ImageDetailScreen() {
                         label="Captured At"
                         value={capturedDate}
                     />
+                    {photo.message ? (
+                        <MetaRow
+                            icon="chatbox-ellipses-outline"
+                            label="Report Message"
+                            value={photo.message}
+                        />
+                    ) : null}
                     <MetaRow
                         icon="location-outline"
                         label="Address"
