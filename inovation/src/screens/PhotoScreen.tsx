@@ -42,7 +42,8 @@ function formatCoord(value: number, decimals = 6): string {
 
 // ─── Component ──────────────────────────────────────────────────────────────
 
-export default function PhotoScreen() {
+export default function PhotoScreen({ route }: any) {
+  const reportMessage = route?.params?.reportMessage || '';
   const insets = useSafeAreaInsets();
   const cameraRef = useRef<CameraView>(null);
 
@@ -104,7 +105,7 @@ export default function PhotoScreen() {
     setIsCapturing(true);
     try {
       const photo = await cameraRef.current.takePictureAsync({
-        quality: 0.85,
+        quality: 0.7,
         exif: true,
         skipProcessing: false,
       });
@@ -117,6 +118,7 @@ export default function PhotoScreen() {
         capturedAt: new Date(),
         location,
         address,
+        message: reportMessage,
       });
     } catch (err: unknown) {
       Alert.alert('Capture error', (err as Error).message);
@@ -144,24 +146,14 @@ export default function PhotoScreen() {
         sendGeoPhotoEmail(capturedPhoto),
       ]);
 
-      const uploadOk = uploadOutcome.status === 'fulfilled' && uploadOutcome.value.success;
-      const emailOk = emailOutcome.status === 'fulfilled' && emailOutcome.value.success;
-
-      const uploadMsg = uploadOk
-        ? 'Saved to cloud database ✓'
-        : uploadOutcome.status === 'rejected'
-          ? `Cloud error: ${(uploadOutcome.reason as Error).message}`
-          : `Cloud failed: ${(uploadOutcome as PromiseFulfilledResult<{ success: boolean; message: string }>).value.message}`;
-
-      const emailMsg = emailOk
-        ? `Emailed to ${ADMIN_EMAIL} ✓`
-        : emailOutcome.status === 'rejected'
-          ? `Email error: ${(emailOutcome.reason as Error).message}`
-          : `Email failed: ${(emailOutcome as PromiseFulfilledResult<{ success: boolean; message: string }>).value.message}`;
+      const uploadOk = uploadOutcome.status === 'fulfilled' && (uploadOutcome.value as any).success;
+      const emailOk = emailOutcome.status === 'fulfilled' && (emailOutcome.value as any).success;
 
       Alert.alert(
-        uploadOk || emailOk ? 'Submitted!' : 'Submission Failed',
-        `${uploadMsg}\n${emailMsg}`,
+        uploadOk || emailOk ? 'Success!' : 'Submission Failed',
+        uploadOk || emailOk
+          ? 'Your report has been submitted successfully.'
+          : 'Failed to submit report. Please try again.',
         [{ text: 'OK', onPress: () => setCapturedPhoto(null) }],
       );
     } catch (err: unknown) {
@@ -311,11 +303,7 @@ function PhotoPreview({
   onSubmit: () => void;
   insets: { top: number; bottom: number };
 }) {
-  const submitLabel =
-    submitStatus === 'saving' ? 'Saving to gallery…' :
-      submitStatus === 'uploading' ? 'Uploading to cloud…' :
-        submitStatus === 'sending' ? 'Sending email…' :
-          'Submit';
+  const submitLabel = 'Submit';
 
   return (
     <ScrollView
@@ -335,6 +323,9 @@ function PhotoPreview({
       {/* Metadata card */}
       <View style={preview.card}>
         <Text style={preview.cardTitle}>Photo Metadata</Text>
+        {photo.message ? (
+          <MetaRow icon="chatbox-ellipses-outline" label="Report Message" value={photo.message} />
+        ) : null}
         <MetaRow icon="time-outline" label="Captured At" value={photo.capturedAt.toLocaleString()} />
         <MetaRow icon="location-outline" label="Address" value={photo.address || '—'} />
         <MetaRow
