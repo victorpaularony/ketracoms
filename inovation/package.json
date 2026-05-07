@@ -12,6 +12,7 @@
     "@expo/vector-icons": "^14.0.0",
     "@react-navigation/bottom-tabs": "^6.5.20",
     "@react-navigation/native": "^6.1.17",
+    "@react-navigation/native-stack": "^6.11.0",
     "@supabase/supabase-js": "^2.105.3",
     "base-64": "^1.0.0",
     "expo": "~51.0.0",
