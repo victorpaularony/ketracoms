@@ -1,6 +1,6 @@
 import { NativeModules, Platform } from 'react-native';
 import { SMTP_CONFIG, ADMIN_EMAIL, EMAIL_SUBJECT_PREFIX } from '../config/constants';
-import type { GeoPhoto } from '../types';
+import type { GeoPhoto, FeedbackData } from '../types';
 
 // The native module is registered as "RNSmtpMailer" in SmtpMailerModule.java
 const { RNSmtpMailer } = NativeModules;
@@ -20,13 +20,17 @@ function buildHtmlBody(photo: GeoPhoto): string {
 
   const rows: { label: string; value: string }[] = [
     { label: 'Captured At', value: capturedAt.toLocaleString() },
-    { label: 'Address',     value: address || 'Unknown' },
-    { label: 'Latitude',    value: latitude.toFixed(8) },
-    { label: 'Longitude',   value: longitude.toFixed(8) },
+    { label: 'Address', value: address || 'Unknown' },
+    { label: 'Latitude', value: latitude.toFixed(8) },
+    { label: 'Longitude', value: longitude.toFixed(8) },
   ];
-  if (altitude != null)          rows.push({ label: 'Altitude',    value: `${altitude.toFixed(2)} m` });
-  if (accuracy != null)          rows.push({ label: 'GPS Accuracy', value: `±${accuracy.toFixed(0)} m` });
-  if (speed != null && speed > 0) rows.push({ label: 'Speed',      value: `${speed.toFixed(1)} m/s` });
+
+  if (photo.message) {
+    rows.unshift({ label: 'Report Message', value: photo.message });
+  }
+  if (altitude != null) rows.push({ label: 'Altitude', value: `${altitude.toFixed(2)} m` });
+  if (accuracy != null) rows.push({ label: 'GPS Accuracy', value: `±${accuracy.toFixed(0)} m` });
+  if (speed != null && speed > 0) rows.push({ label: 'Speed', value: `${speed.toFixed(1)} m/s` });
 
   const tableRows = rows
     .map(({ label, value }) => `
@@ -88,21 +92,88 @@ export async function sendGeoPhotoEmail(photo: GeoPhoto): Promise<SendResult> {
 
   try {
     await RNSmtpMailer.sendMail({
-      mailhost:        SMTP_CONFIG.host,
-      port:            String(SMTP_CONFIG.port),
-      ssl:             SMTP_CONFIG.ssl,
-      username:        SMTP_CONFIG.username,
-      password:        SMTP_CONFIG.password,
-      from:            SMTP_CONFIG.from,
-      recipients:      ADMIN_EMAIL,
-      subject:         `${EMAIL_SUBJECT_PREFIX} — ${photo.capturedAt.toLocaleString()}`,
-      htmlBody:        buildHtmlBody(photo),
+      mailhost: SMTP_CONFIG.host,
+      port: String(SMTP_CONFIG.port),
+      ssl: SMTP_CONFIG.ssl,
+      username: SMTP_CONFIG.username,
+      password: SMTP_CONFIG.password,
+      from: SMTP_CONFIG.from,
+      recipients: ADMIN_EMAIL,
+      subject: `${EMAIL_SUBJECT_PREFIX} — ${photo.capturedAt.toLocaleString()}`,
+      htmlBody: buildHtmlBody(photo),
       attachmentPaths: [filePath],
       attachmentNames: [fileName],
       attachmentTypes: ['image/jpeg'],
     });
 
     return { success: true, message: 'Email sent successfully.' };
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : String(err);
+    return { success: false, message: msg };
+  }
+}
+
+export async function sendFeedbackEmail(feedback: FeedbackData): Promise<SendResult> {
+  if (!RNSmtpMailer) {
+    return { success: false, message: 'SMTP native module unavailable (Android only).' };
+  }
+
+  if (Platform.OS !== 'android') {
+    return { success: false, message: 'Gmail SMTP sending is only supported on Android in this build.' };
+  }
+
+  const htmlBody = `
+<!DOCTYPE html>
+<html><head><meta charset="UTF-8"/></head>
+<body style="margin:0;padding:0;font-family:system-ui,sans-serif;background:#F3F4F6;">
+  <div style="max-width:600px;margin:32px auto;background:#fff;border-radius:12px;
+              overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
+    <div style="background:#10B981;padding:28px 32px;">
+      <h1 style="margin:0;color:#fff;font-size:22px;font-weight:700;"> New Feedback Received</h1>
+      <p style="margin:6px 0 0;color:#D1FAE5;font-size:13px;">Sent via Inovation App</p>
+    </div>
+    <div style="padding:28px 32px;">
+      <h2 style="margin:0 0 16px;font-size:14px;font-weight:700;color:#1F2937;
+                 text-transform:uppercase;letter-spacing:0.5px;">Feedback Details</h2>
+      <table style="width:100%;border-collapse:collapse;font-size:14px;margin-bottom:24px;">
+        <tr>
+            <td style="padding:8px 14px;font-weight:600;color:#374151;background:#F9FAFB;border:1px solid #E5E7EB;">Contact</td>
+            <td style="padding:8px 14px;color:#111827;border:1px solid #E5E7EB;">${feedback.contact}</td>
+        </tr>
+        <tr>
+            <td style="padding:8px 14px;font-weight:600;color:#374151;background:#F9FAFB;border:1px solid #E5E7EB;">County</td>
+            <td style="padding:8px 14px;color:#111827;border:1px solid #E5E7EB;">${feedback.county}</td>
+        </tr>
+        <tr>
+            <td style="padding:8px 14px;font-weight:600;color:#374151;background:#F9FAFB;border:1px solid #E5E7EB;">Message</td>
+            <td style="padding:8px 14px;color:#111827;border:1px solid #E5E7EB;">${feedback.message}</td>
+        </tr>
+        <tr>
+            <td style="padding:8px 14px;font-weight:600;color:#374151;background:#F9FAFB;border:1px solid #E5E7EB;">Submitted At</td>
+            <td style="padding:8px 14px;color:#111827;border:1px solid #E5E7EB;">${feedback.submittedAt.toLocaleString()}</td>
+        </tr>
+      </table>
+    </div>
+    <div style="padding:16px 32px;background:#F9FAFB;border-top:1px solid #E5E7EB;">
+      <p style="margin:0;font-size:12px;color:#9CA3AF;">Sent automatically by Inovation App</p>
+    </div>
+  </div>
+</body></html>`.trim();
+
+  try {
+    await RNSmtpMailer.sendMail({
+      mailhost: SMTP_CONFIG.host,
+      port: String(SMTP_CONFIG.port),
+      ssl: SMTP_CONFIG.ssl,
+      username: SMTP_CONFIG.username,
+      password: SMTP_CONFIG.password,
+      from: SMTP_CONFIG.from,
+      recipients: ADMIN_EMAIL,
+      subject: `Feedback: ${feedback.county} — From ${feedback.contact}`,
+      htmlBody: htmlBody,
+    });
+
+    return { success: true, message: 'Feedback sent successfully.' };
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : String(err);
     return { success: false, message: msg };
