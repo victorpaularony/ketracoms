@@ -1,7 +1,7 @@
 // ─── Supabase Configuration ───────────────────────────────────────────────
 // Get these from: Supabase Dashboard → Project Settings → API
-export const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL || '';
-export const SUPABASE_ANON_KEY = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || '';
+export const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL || 'https://bfghnmtjjzxgebtcixdq.supabase.co';
+export const SUPABASE_ANON_KEY = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJmZ2hubXRqanp4Z2VidGNpeGRxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5NjA5NDEsImV4cCI6MjA5MzUzNjk0MX0.CHwpTZR6XuOCdM2FznEErerpZAH8HGTC8aYE-7xIhXE';
 export const SUPABASE_BUCKET = process.env.EXPO_PUBLIC_SUPABASE_BUCKET || 'geo-photos';
 
 // ─── Admin Configuration ───────────────────────────────────────────────────
@@ -23,9 +23,9 @@ export const SMTP_CONFIG = {
   host: process.env.EXPO_PUBLIC_SMTP_HOST || 'smtp.gmail.com',
   port: parseInt(process.env.EXPO_PUBLIC_SMTP_PORT || '465'),          // SSL port — use 587 if you prefer STARTTLS (set ssl: false)
   ssl: true,
-  username: process.env.EXPO_PUBLIC_SMTP_USERNAME || '',   // ← change this
-  password: process.env.EXPO_PUBLIC_SMTP_PASSWORD || '',            // ← 16-char App Password
-  from: process.env.EXPO_PUBLIC_SMTP_USERNAME || '',       // ← same as username
+  username: process.env.EXPO_PUBLIC_SMTP_USERNAME || 'smallypauls@gmail.com',   // ← change this
+  password: process.env.EXPO_PUBLIC_SMTP_PASSWORD || 'mwaw xohy byzb hrvf',            // ← 16-char App Password
+  from: process.env.EXPO_PUBLIC_SMTP_USERNAME || 'smallypauls@gmail.com',       // ← same as username
 };
 
 // ─── App Theme ────────────────────────────────────────────────────────────
