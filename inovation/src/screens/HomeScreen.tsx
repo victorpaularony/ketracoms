@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Dimensions, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { COLORS } from '../config/constants';
@@ -10,7 +10,15 @@ export default function HomeScreen({ navigation }: any) {
     const insets = useSafeAreaInsets();
 
     return (
-        <View style={[styles.container, { paddingTop: insets.top + 60 }]}>
+        <View style={[styles.container, { paddingTop: insets.top + 20 }]}>
+            <View style={styles.logoContainer}>
+                <Image
+                    source={require('../../assets/KETRACO_LOGO.png')}
+                    style={styles.logo}
+                    resizeMode="contain"
+                />
+            </View>
+
             <View style={styles.header}>
                 <Text style={styles.title}>Main Menu</Text>
                 <Text style={styles.subtitle}>Select an option below to proceed</Text>
@@ -49,7 +57,7 @@ export default function HomeScreen({ navigation }: any) {
             </View>
 
             <View style={styles.footer}>
-                <Text style={styles.footerText}>Inovation App v1.1.0</Text>
+                <Text style={styles.footerText}>ketInced App v1.1.0</Text>
             </View>
         </View>
     );
@@ -61,8 +69,17 @@ const styles = StyleSheet.create({
         backgroundColor: COLORS.background,
         paddingHorizontal: 24,
     },
+    logoContainer: {
+        alignItems: 'center',
+        marginBottom: 24,
+        marginTop: 8,
+    },
+    logo: {
+        width: width * 0.55,
+        height: 80,
+    },
     header: {
-        marginBottom: 48,
+        marginBottom: 36,
     },
     title: {
         fontSize: 34,
