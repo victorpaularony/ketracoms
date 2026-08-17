@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "Inovation",
+    "name": "ketInced",
     "slug": "inovation",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -31,20 +31,20 @@
       [
         "expo-camera",
         {
-          "cameraPermission": "Allow Inovation to access your camera to take geotagged photos."
+          "cameraPermission": "Allow ketInced to access your camera to take geotagged photos."
         }
       ],
       [
         "expo-location",
         {
-          "locationWhenInUsePermission": "Allow Inovation to use your location to geotag photos."
+          "locationWhenInUsePermission": "Allow ketInced to use your location to geotag photos."
         }
       ],
       [
         "expo-media-library",
         {
-          "photosPermission": "Allow Inovation to save photos to your library.",
-          "savePhotosPermission": "Allow Inovation to save photos to your library.",
+          "photosPermission": "Allow ketInced to save photos to your library.",
+          "savePhotosPermission": "Allow ketInced to save photos to your library.",
           "isAccessMediaLocationEnabled": true
         }
       ]
