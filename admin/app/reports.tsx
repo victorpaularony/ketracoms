@@ -15,6 +15,7 @@ import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Image } from 'expo-image';
+import { AdminColors as C } from '@/constants/theme';
 import { supabase } from '@/services/supabaseClient';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
@@ -37,20 +38,6 @@ export interface GeoPhotoRecord {
     height: number | null;
     message?: string | null;
 }
-
-// ─── Colours ─────────────────────────────────────────────────────────────────
-const C = {
-    bg: '#0F172A',
-    surface: '#1E293B',
-    card: '#1E293B',
-    border: '#334155',
-    primary: '#3B82F6',
-    accent: '#10B981',
-    textPri: '#F1F5F9',
-    textSec: '#94A3B8',
-    textMuted: '#64748B',
-    white: '#FFFFFF',
-};
 
 export default function ReportsScreen() {
     const insets = useSafeAreaInsets();
@@ -209,7 +196,7 @@ export default function ReportsScreen() {
 
     return (
         <View style={styles.container}>
-            <StatusBar barStyle="light-content" />
+            <StatusBar barStyle="dark-content" backgroundColor={C.bg} />
             <FlatList
                 key={viewMode + numColumns} // Force re-render on grid/list change
                 data={photos}
@@ -263,7 +250,7 @@ const styles = StyleSheet.create({
     headerTitle: { flexDirection: 'row', alignItems: 'center', gap: 10 },
     iconBadge: {
         width: 38, height: 38, borderRadius: 12,
-        backgroundColor: 'rgba(59,130,246,0.15)',
+        backgroundColor: C.primaryLight,
         alignItems: 'center', justifyContent: 'center',
     },
     title: { fontSize: 26, fontWeight: '800', color: C.textPri, letterSpacing: -0.5 },
@@ -287,7 +274,7 @@ const styles = StyleSheet.create({
     cardAddress: { fontSize: 13, fontWeight: '600', color: C.textPri, marginBottom: 6 },
     cardFooter: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
     cardDate: { fontSize: 11, color: C.textMuted },
-    coordRow: { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: 'rgba(59,130,246,0.1)', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 6 },
+    coordRow: { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: C.primaryLight, paddingHorizontal: 6, paddingVertical: 2, borderRadius: 6 },
     coordTxt: { fontSize: 10, color: C.primary, fontWeight: '700' },
     listMessage: { fontSize: 12, color: C.textSec, marginTop: 8, fontStyle: 'italic' },
     loadingText: { marginTop: 16, fontSize: 15, color: C.textSec, fontWeight: '500' },
