@@ -13,6 +13,7 @@ import {
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { AdminColors as C } from '@/constants/theme';
 import { supabase } from '@/services/supabaseClient';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
@@ -27,21 +28,6 @@ interface FeedbackRecord {
     message: string | null;
     rating: number | null;
 }
-
-// ─── Colours ─────────────────────────────────────────────────────────────────
-const C = {
-    bg: '#0F172A',
-    surface: '#1E293B',
-    card: '#1E293B',
-    border: '#334155',
-    primary: '#3B82F6',
-    accent: '#10B981',
-    warning: '#F59E0B',
-    textPri: '#F1F5F9',
-    textSec: '#94A3B8',
-    textMuted: '#64748B',
-    white: '#FFFFFF',
-};
 
 export default function FeedbackScreen() {
     const insets = useSafeAreaInsets();
@@ -181,7 +167,7 @@ export default function FeedbackScreen() {
 
     return (
         <View style={styles.container}>
-            <StatusBar barStyle="light-content" />
+            <StatusBar barStyle="dark-content" backgroundColor={C.bg} />
             <FlatList
                 key={viewMode}
                 data={records}
@@ -231,7 +217,7 @@ const styles = StyleSheet.create({
     headerTitle: { flexDirection: 'row', alignItems: 'center', gap: 10 },
     iconBadge: {
         width: 38, height: 38, borderRadius: 12,
-        backgroundColor: 'rgba(16,185,129,0.15)',
+        backgroundColor: C.accentLight,
         alignItems: 'center', justifyContent: 'center',
     },
     title: { fontSize: 26, fontWeight: '800', color: C.textPri, letterSpacing: -0.5 },
@@ -246,7 +232,7 @@ const styles = StyleSheet.create({
     },
     gridCard: { marginBottom: 16 },
     cardHeader: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 10 },
-    avatar: { width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(59,130,246,0.15)', alignItems: 'center', justifyContent: 'center' },
+    avatar: { width: 36, height: 36, borderRadius: 18, backgroundColor: C.primaryLight, alignItems: 'center', justifyContent: 'center' },
     avatarText: { color: C.primary, fontWeight: '700', fontSize: 16 },
     nameSection: { flex: 1 },
     nameText: { fontSize: 14, fontWeight: '700', color: C.textPri },
