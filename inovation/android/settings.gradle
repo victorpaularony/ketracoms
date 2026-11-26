@@ -44,7 +44,7 @@ if (getRNMinorVersion() >= 75) {
   }
 }
 
-rootProject.name = 'Inovation'
+rootProject.name = 'ketInced'
 
 dependencyResolutionManagement {
   versionCatalogs {
