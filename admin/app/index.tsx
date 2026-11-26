@@ -3,19 +3,10 @@ import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Dimensions, Platf
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
+import { AdminColors as C } from '@/constants/theme';
 import { supabase } from '@/services/supabaseClient';
 
 const { width } = Dimensions.get('window');
-
-const C = {
-    bg: '#0F172A',
-    surface: '#1E293B',
-    primary: '#3B82F6',
-    accent: '#10B981',
-    textPri: '#F1F5F9',
-    textSec: '#94A3B8',
-    border: '#334155',
-};
 
 export default function DashboardScreen() {
     const insets = useSafeAreaInsets();
@@ -126,6 +117,11 @@ const styles = StyleSheet.create({
         padding: 20,
         borderWidth: 1,
         borderColor: C.border,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.05,
+        shadowRadius: 8,
+        elevation: 2,
     },
     statIconWrap: { width: 44, height: 44, borderRadius: 12, alignItems: 'center', justifyContent: 'center', marginBottom: 12 },
     statValue: { fontSize: 24, fontWeight: '700', color: C.textPri, marginBottom: 2 },
@@ -141,6 +137,11 @@ const styles = StyleSheet.create({
         marginBottom: 16,
         borderWidth: 1,
         borderColor: C.border,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.05,
+        shadowRadius: 8,
+        elevation: 2,
     },
     menuIconWrap: { width: 56, height: 56, borderRadius: 18, alignItems: 'center', justifyContent: 'center' },
     menuContent: { flex: 1, marginLeft: 16, marginRight: 8 },
