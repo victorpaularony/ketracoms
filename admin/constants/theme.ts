@@ -5,24 +5,42 @@
 
 import { Platform } from 'react-native';
 
-const tintColorLight = '#0a7ea4';
-const tintColorDark = '#fff';
+const tintColorLight = '#106050';
+const tintColorDark = '#1B6A57';
+
+/** KETRACO green-and-white palette matching the inovation logo colors. */
+export const AdminColors = {
+  bg: '#F4F8F6',
+  surface: '#FFFFFF',
+  card: '#FFFFFF',
+  border: '#D6E4DD',
+  primary: '#106050',
+  primaryDark: '#0B463A',
+  primaryLight: '#E6F4EF',
+  accent: '#1B6A57',
+  accentLight: '#E6F4EF',
+  warning: '#D97706',
+  textPri: '#0F2922',
+  textSec: '#475E57',
+  textMuted: '#6B827B',
+  white: '#FFFFFF',
+};
 
 export const Colors = {
   light: {
-    text: '#11181C',
-    background: '#fff',
+    text: '#0F2922',
+    background: '#FFFFFF',
     tint: tintColorLight,
-    icon: '#687076',
-    tabIconDefault: '#687076',
+    icon: '#475E57',
+    tabIconDefault: '#6B827B',
     tabIconSelected: tintColorLight,
   },
   dark: {
-    text: '#ECEDEE',
-    background: '#151718',
+    text: '#0F2922',
+    background: '#FFFFFF',
     tint: tintColorDark,
-    icon: '#9BA1A6',
-    tabIconDefault: '#9BA1A6',
+    icon: '#475E57',
+    tabIconDefault: '#6B827B',
     tabIconSelected: tintColorDark,
   },
 };
