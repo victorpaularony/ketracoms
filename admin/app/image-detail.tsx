@@ -12,21 +12,10 @@ import {
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import type { GeoPhotoRecord } from './(tabs)/index';
+import { AdminColors as C } from '@/constants/theme';
+import type { GeoPhotoRecord } from './reports';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
-
-const C = {
-    bg: '#0F172A',
-    surface: '#1E293B',
-    border: '#334155',
-    primary: '#3B82F6',
-    accent: '#10B981',
-    textPri: '#F1F5F9',
-    textSec: '#94A3B8',
-    textMuted: '#64748B',
-    white: '#FFFFFF',
-};
 
 function MetaRow({ icon, label, value }: {
     icon: keyof typeof Ionicons.glyphMap;
@@ -69,7 +58,7 @@ export default function ImageDetailScreen() {
 
     return (
         <View style={styles.container}>
-            <StatusBar barStyle="light-content" backgroundColor={C.bg} />
+            <StatusBar barStyle="dark-content" backgroundColor={C.bg} />
 
             {/* Back button */}
             <TouchableOpacity
@@ -208,7 +197,7 @@ const rows = StyleSheet.create({
     row: { flexDirection: 'row', alignItems: 'flex-start', marginBottom: 14, gap: 10 },
     iconBox: {
         width: 30, height: 30, borderRadius: 8,
-        backgroundColor: 'rgba(59,130,246,0.15)',
+        backgroundColor: C.primaryLight,
         alignItems: 'center', justifyContent: 'center',
     },
     label: {
