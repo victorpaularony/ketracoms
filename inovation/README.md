@@ -113,6 +113,45 @@ npm run android
 
 ---
 
+## Building a Standalone APK (Release)
+
+A **Release** build embeds the JavaScript bundle (`index.android.bundle`) directly inside the APK so the app runs standalone on any Android device without needing Metro or a USB connection to your computer.
+
+### Build the APK
+
+From the project root:
+
+```bash
+cd android
+./gradlew app:assembleRelease
+```
+
+Or build and install directly onto a USB-connected phone in one step:
+
+```bash
+npx expo run:android --variant release
+```
+
+> **Note:** Make sure `android/local.properties` contains `sdk.dir=/path/to/Android/Sdk` (or `ANDROID_HOME` is set in your shell), especially after running `expo prebuild --clean`.
+
+### Where to find the built APK
+
+The generated APK is located at:
+
+```text
+android/app/build/outputs/apk/release/app-release.apk
+```
+
+You can copy `app-release.apk` to any Android phone and install it, or install it via ADB:
+
+```bash
+adb install -r android/app/build/outputs/apk/release/app-release.apk
+```
+
+> **Signing note:** In `android/app/build.gradle`, the `release` build type currently signs with `signingConfigs.debug` for local/internal testing. Before publishing to the Google Play Store, replace this with your own release keystore.
+
+---
+
 ## Step 6 — First-time phone setup
 
 On your Android device:
